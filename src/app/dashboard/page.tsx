@@ -54,6 +54,23 @@ async function moveTask(
         );
     }
 }
+
+async function deleteTask(id: string) {
+    try {
+        await fetch("/api/tasks", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id }),
+        });
+
+        fetchTasks();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 const todoTasks = tasks.filter(
     (task) => task.status === "todo"
 );
@@ -86,6 +103,7 @@ const doneTasks = tasks.filter(
                       assignedTo={task.assignedTo}
                       dueDate={task.dueDate}
                       onMove={moveTask}
+                      onDelete={deleteTask}
                   />
               ))}
           </div>
@@ -108,6 +126,7 @@ const doneTasks = tasks.filter(
                       assignedTo={task.assignedTo}
                       dueDate={task.dueDate}
                       onMove={moveTask}
+                      onDelete={deleteTask}
                   />
               ))}
           </div>
@@ -130,6 +149,7 @@ const doneTasks = tasks.filter(
                       assignedTo={task.assignedTo}
                       dueDate={task.dueDate}
                       onMove={moveTask}
+                      onDelete={deleteTask}
                   />
               ))}
           </div>

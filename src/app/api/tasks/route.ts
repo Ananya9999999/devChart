@@ -57,3 +57,24 @@ export async function PATCH(request: Request){
         );
     }
 }
+
+export async function DELETE(request: Request) {
+    try {
+        await connectDB();
+
+        const { id } = await request.json();
+
+        await Task.findByIdAndDelete(id);
+
+        return Response.json({
+            message: "Task deleted successfully",
+        });
+    } catch (error) {
+        console.log(error);
+
+        return Response.json(
+            { message: "Failed to delete task" },
+            { status: 500 }
+        );
+    }
+}

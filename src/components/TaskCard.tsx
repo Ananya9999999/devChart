@@ -7,6 +7,7 @@ type TaskCardProps = {
     assignedTo?: string;
     dueDate?: string;
     onMove?: (_id: string, status: string) => void;
+    onDelete?: (_id: string) => void;
 };
 
 const TaskCard = ({
@@ -18,6 +19,7 @@ const TaskCard = ({
     assignedTo,
     dueDate,
     onMove,
+    onDelete
 }: TaskCardProps) => {
     const overdue =
         dueDate &&
@@ -73,10 +75,7 @@ const TaskCard = ({
                 {status === "todo" && (
                     <button
                         onClick={() =>
-                            onMove?.(
-                                _id,
-                                "inprogress"
-                            )
+                            onMove?.(_id, "inprogress")
                         }
                         className="bg-yellow-500 text-white px-3 py-1 rounded"
                     >
@@ -87,16 +86,25 @@ const TaskCard = ({
                 {status === "inprogress" && (
                     <button
                         onClick={() =>
-                            onMove?.(
-                                _id,
-                                "done"
-                            )
+                            onMove?.(_id, "done")
                         }
                         className="bg-green-500 text-white px-3 py-1 rounded"
                     >
                         Complete
                     </button>
                 )}
+
+                <button
+                    onClick={() => {
+                        if (confirm("Delete this task?")) {
+                            onDelete?.(_id);
+                        }
+                    }}
+                    className="bg-red-500 text-white px-3 py-1 rounded"
+                >
+                    Delete
+                </button>
+
             </div>
 
         </div>
