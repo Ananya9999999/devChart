@@ -1,22 +1,19 @@
+import Link from "next/link";
 
-import Link from "next/link"
+const Navbar = () => {
+  return (
+    <nav className="bg-slate-900 text-white px-8 py-4 flex justify-between items-center shadow-lg">
+      <h1 className="text-3xl font-bold text-teal-400">
+        ClubSync
+      </h1>
 
-export default function Navbar(){
-    return (
-        <>
-            <div className = "flex justify-between items-center h-auto font-bold bg-black text-teal-200 p-4">
-                <Link href="/">
-                    <h1 className = "text-2xl"> devChart </h1>
-                </Link>
-                <div className = "flex  gap-4  ">
-                    <Link href="/dashboard">
-                        <button className = "rounded-lg py-1.5 px-3  bg-teal-200 text-black"> DashBoard </button>
-                    </Link>
-                    <Link href="/create-task">
-                        <button className = "rounded-lg py-1.5 px-3  bg-teal-200 text-black"> Create Task </button>
-                    </Link>
-                </div>
-            </div>
-        </>
-    );
-}
+      <div className="flex gap-8 text-lg">
+        <Link href="/">Home</Link>
+        <Link href="/create-task">Create Task</Link>
+        <Link href="/dashboard">Dashboard</Link>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;

@@ -3,63 +3,102 @@ type TaskCardProps = {
     title: string;
     description: string;
     priority: string;
+    status: string;
     assignedTo?: string;
     dueDate?: string;
+    onMove?: (_id: string, status: string) => void;
 };
 
 const TaskCard = ({
+    _id,
     title,
     description,
     priority,
+    status,
     assignedTo,
     dueDate,
+    onMove,
 }: TaskCardProps) => {
-    const bgClass =
-        priority.toLowerCase() === "high"
-            ? "bg-red-400"
-            : priority.toLowerCase() === "medium"
-            ? "bg-yellow-400"
-            : "bg-green-400";
-
     const overdue =
         dueDate &&
-        new Date(dueDate) < new Date();
+        new Date(dueDate) < new Date() &&
+        status !== "done";
 
     return (
-        <div
-            className={`flex h-auto w-64 flex-col rounded-2xl border-2 border-black overflow-hidden ${bgClass}`}
-        >
-            <div className="bg-black p-3 text-xl font-bold text-teal-200">
+        <div className="bg-white rounded-2xl shadow-lg border p-4 mb-4">
+
+            <h3 className="font-bold text-lg">
                 {title}
+            </h3>
+
+            <p className="text-gray-600 mt-2">
+                {description}
+            </p>
+
+            <div className="flex justify-between items-center mt-4">
+
+                <span
+                    className={`px-3 py-1 rounded-full text-sm ${
+                        priority === "high"
+                            ? "bg-red-100 text-red-700"
+                            : priority === "medium"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-green-100 text-green-700"
+                    }`}
+                >
+                    {priority}
+                </span>
+
+                {assignedTo && (
+                    <span className="text-gray-500 text-sm">
+                        {assignedTo}
+                    </span>
+                )}
             </div>
 
-            <div className="p-3">
-                <div className="rounded-xl border border-black bg-teal-200 p-3 text-sm">
-                    {description}
-                </div>
+            {dueDate && (
+                <p
+                    className={`mt-2 text-sm ${
+                        overdue
+                            ? "text-red-600 font-bold"
+                            : "text-gray-500"
+                    }`}
+                >
+                    {dueDate}
+                </p>
+            )}
 
-                <div className="mt-2 text-sm">
-                    <p>
-                        <strong>Assigned:</strong>{" "}
-                        {assignedTo || "Unassigned"}
-                    </p>
+            <div className="mt-4 flex gap-2">
 
-                    {dueDate && (
-                        <p>
-                            <strong>Due:</strong>{" "}
-                            {new Date(
-                                dueDate
-                            ).toLocaleDateString()}
-                        </p>
-                    )}
+                {status === "todo" && (
+                    <button
+                        onClick={() =>
+                            onMove?.(
+                                _id,
+                                "inprogress"
+                            )
+                        }
+                        className="bg-yellow-500 text-white px-3 py-1 rounded"
+                    >
+                        Start
+                    </button>
+                )}
 
-                    {overdue && (
-                        <p className="font-bold text-red-700">
-                            Overdue
-                        </p>
-                    )}
-                </div>
+                {status === "inprogress" && (
+                    <button
+                        onClick={() =>
+                            onMove?.(
+                                _id,
+                                "done"
+                            )
+                        }
+                        className="bg-green-500 text-white px-3 py-1 rounded"
+                    >
+                        Complete
+                    </button>
+                )}
             </div>
+
         </div>
     );
 };

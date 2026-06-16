@@ -1,167 +1,120 @@
-"use client";
+import Navbar from "@/components/Navbar";
+import Link from "next/link";
+import connectDB from "@/lib/mongodb";
+import Task from "@/models/Tasks";
 
-import { useEffect, useState } from "react";
-import TaskCard from "@/components/TaskCard";
+export default async function Home() {
+    await connectDB();
 
-type Task = {
-    _id: string;
-    title: string;
-    description: string;
-    priority: string;
-    status: string;
-    assignedTo: string;
-    dueDate: string;
-};
+    const tasks = await Task.find();
 
-export default function Dashboard() {
-    const [tasks, setTasks] = useState<Task[]>([]);
+    const totalTasks = tasks.length;
 
-    useEffect(() => {
-        fetchTasks();
-    }, []);
+    const completedTasks = tasks.filter(
+        (task: any) => task.status === "done"
+    ).length;
 
-    const fetchTasks = async () => {
-        const res = await fetch("/api/tasks");
-        const data = await res.json();
-        setTasks(data);
-    };
-
-    const updateStatus = async (
-        id: string,
-        status: string
-    ) => {
-        await fetch("/api/tasks", {
-            method: "PATCH",
-            headers: {
-                "Content-Type":
-                    "application/json",
-            },
-            body: JSON.stringify({
-                id,
-                status,
-            }),
-        });
-
-        fetchTasks();
-    };
-
-    const todo = tasks.filter(
-        (t) => t.status === "todo"
-    );
-
-    const inprogress = tasks.filter(
-        (t) => t.status === "inprogress"
-    );
-
-    const done = tasks.filter(
-        (t) => t.status === "done"
-    );
+    const inProgressTasks = tasks.filter(
+        (task: any) => task.status === "inprogress"
+    ).length;
 
     return (
-        <div className="p-8">
+        <div>
+            <Navbar />
 
-            {/* Analytics */}
+            <div className="flex flex-col items-center text-center px-6 py-12">
 
-            <div className="grid grid-cols-3 gap-4 mb-8">
-                <div className="p-4 bg-teal-200 rounded-xl">
-                    Total: {tasks.length}
-                </div>
+            <h1 className="text-7xl font-bold text-teal-500">
+                ClubSync
+            </h1>
 
-                <div className="p-4 bg-yellow-200 rounded-xl">
-                    In Progress:
-                    {inprogress.length}
-                </div>
+            <p className="text-2xl mt-6 max-w-3xl">
+                Collaborate. Organize. Deliver.
+            </p>
 
-                <div className="p-4 bg-green-200 rounded-xl">
-                    Completed:
-                    {done.length}
-                </div>
+            <p className="text-gray-600 mt-2">
+                A project management platform built for student clubs.
+            </p>
+
+            <div className="flex gap-6 mt-10">
+                <Link href="/create-task">
+                <button className="px-8 py-4 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold shadow-lg">
+                    + New Task
+                </button>
+                </Link>
+
+                <Link href="/dashboard">
+                <button className="px-8 py-4 rounded-xl bg-slate-900 text-white font-bold shadow-lg">
+                    View Board
+                </button>
+                </Link>
             </div>
 
-            {/* Kanban */}
+            {/* Stats */}
 
-            <div className="grid grid-cols-3 gap-8">
+            <div className="grid grid-cols-3 gap-8 mt-16 w-full max-w-5xl">
 
-                {/* Todo */}
-
-                <div>
-                    <h2 className="text-2xl font-bold mb-4">
-                        To Do
-                    </h2>
-
-                    {todo.map((task) => (
-                        <div
-                            key={task._id}
-                            className="mb-3"
-                        >
-                            <TaskCard
-                                {...task}
-                            />
-
-                            <button
-                                className="mt-2 bg-blue-500 text-white px-3 py-1 rounded"
-                                onClick={() =>
-                                    updateStatus(
-                                        task._id,
-                                        "inprogress"
-                                    )
-                                }
-                            >
-                                Move →
-                            </button>
-                        </div>
-                    ))}
+                <div className="bg-white rounded-2xl shadow-lg border p-6">
+                <h2 className="text-4xl font-bold text-teal-600">
+                    {totalTasks}
+                </h2>
+                <p className="text-gray-500">
+                    Total Tasks
+                </p>
                 </div>
 
-                {/* In Progress */}
-
-                <div>
-                    <h2 className="text-2xl font-bold mb-4">
-                        In Progress
-                    </h2>
-
-                    {inprogress.map((task) => (
-                        <div
-                            key={task._id}
-                            className="mb-3"
-                        >
-                            <TaskCard
-                                {...task}
-                            />
-
-                            <button
-                                className="mt-2 bg-green-600 text-white px-3 py-1 rounded"
-                                onClick={() =>
-                                    updateStatus(
-                                        task._id,
-                                        "done"
-                                    )
-                                }
-                            >
-                                Complete
-                            </button>
-                        </div>
-                    ))}
+                <div className="bg-white rounded-2xl shadow-lg border p-6">
+                <h2 className="text-4xl font-bold text-yellow-500">
+                    {inProgressTasks}
+                </h2>
+                <p className="text-gray-500">
+                    In Progress
+                </p>
                 </div>
 
-                {/* Done */}
-
-                <div>
-                    <h2 className="text-2xl font-bold mb-4">
-                        Done
-                    </h2>
-
-                    {done.map((task) => (
-                        <div
-                            key={task._id}
-                            className="mb-3"
-                        >
-                            <TaskCard
-                                {...task}
-                            />
-                        </div>
-                    ))}
+                <div className="bg-white rounded-2xl shadow-lg border p-6">
+                <h2 className="text-4xl font-bold text-green-500">
+                    {completedTasks}
+                </h2>
+                <p className="text-gray-500">
+                    Completed
+                </p>
                 </div>
+
+            </div>
+
+            {/* Features */}
+
+            <div className="grid grid-cols-3 gap-6 mt-16 max-w-6xl w-full">
+
+                <div className="bg-white rounded-2xl shadow p-6">
+                <h3 className="font-bold text-xl mb-2">
+                    Kanban Workflow
+                </h3>
+                <p>
+                    Track tasks through To Do, In Progress and Done.
+                </p>
+                </div>
+
+                <div className="bg-white rounded-2xl shadow p-6">
+                <h3 className="font-bold text-xl mb-2">
+                    Team Assignment
+                </h3>
+                <p>
+                    Assign responsibilities to club members.
+                </p>
+                </div>
+
+                <div className="bg-white rounded-2xl shadow p-6">
+                <h3 className="font-bold text-xl mb-2">
+                    Deadline Tracking
+                </h3>
+                <p>
+                    Monitor due dates and task deadlines.
+                </p>
+                </div>
+
+            </div>
             </div>
         </div>
     );

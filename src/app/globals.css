@@ -7,5 +7,10 @@
 }
 
 body {
-  background-color: bisque;
+  background: linear-gradient(
+    to bottom,
+    #f8fafc,
+    #eef2ff
+  );
+  color: #0f172a;
 }

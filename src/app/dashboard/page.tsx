@@ -9,7 +9,10 @@ type Task = {
   title: string;
   description: string;
   priority: string;
-  completion: boolean;
+  status: string;
+  assignedTo?: string;
+  dueDate?: string;
+  project?: string;
 };
 
 export default function Home(){
@@ -27,21 +30,111 @@ export default function Home(){
       fetchTasks();
     }, []);
 
+async function moveTask(
+    id: string,
+    status: string
+) {
+    try {
+        await fetch("/api/tasks", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                id,
+                status,
+            }),
+        });
 
+        fetchTasks(); 
+    } catch (error) {
+        console.error(
+            "Failed to move task:",
+            error
+        );
+    }
+}
+const todoTasks = tasks.filter(
+    (task) => task.status === "todo"
+);
+
+const inProgressTasks = tasks.filter(
+    (task) => task.status === "inprogress"
+);
+
+const doneTasks = tasks.filter(
+    (task) => task.status === "done"
+);
     return (
       <>
         <Navbar />
-        <div className="flex flex-wrap items-start gap-4 m-3">
-          {tasks.map((task)=>(
-            <TaskCard 
-              key={task._id}
-              title={task.title}
-              description={task.description}
-              priority={task.priority}
-              completion={task.completion}
-            />
-          ))}
-        </div>
+        <div className="grid grid-cols-3 gap-8 m-4">
+          {/* TO DO */}
+          <div className="bg-white rounded-2xl shadow-lg p-4 min-h-[600px]">
+              <h2 className="text-2xl font-bold mb-4">
+                  To Do
+              </h2>
+
+              {todoTasks.map((task) => (
+                  <TaskCard
+                      key={task._id}
+                      _id={task._id}
+                      title={task.title}
+                      description={task.description}
+                      priority={task.priority}
+                      status={task.status}
+                      assignedTo={task.assignedTo}
+                      dueDate={task.dueDate}
+                      onMove={moveTask}
+                  />
+              ))}
+          </div>
+
+          {/* IN PROGRESS */}
+
+          <div className="bg-white rounded-2xl shadow-lg p-4 min-h-[600px]">
+              <h2 className="text-2xl font-bold mb-4">
+                  In Progress
+              </h2>
+
+              {inProgressTasks.map((task) => (
+                  <TaskCard
+                      key={task._id}
+                      _id={task._id}
+                      title={task.title}
+                      description={task.description}
+                      priority={task.priority}
+                      status={task.status}
+                      assignedTo={task.assignedTo}
+                      dueDate={task.dueDate}
+                      onMove={moveTask}
+                  />
+              ))}
+          </div>
+
+          {/* DONE */}
+
+          <div className="bg-white rounded-2xl shadow-lg p-4 min-h-[600px]">
+              <h2 className="text-2xl font-bold mb-4">
+                  Done
+              </h2>
+
+              {doneTasks.map((task) => (
+                  <TaskCard
+                      key={task._id}
+                      _id={task._id}
+                      title={task.title}
+                      description={task.description}
+                      priority={task.priority}
+                      status={task.status}
+                      assignedTo={task.assignedTo}
+                      dueDate={task.dueDate}
+                      onMove={moveTask}
+                  />
+              ))}
+          </div>
+
+      </div>
       </>
     );
 }
