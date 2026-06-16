@@ -8,6 +8,8 @@ const CreateTask = () => {
 const [title,setTitle] = useState("");
 const [description,setDescription] = useState("");
 const [priority,setPriority] = useState("low");
+const [assignedTo, setAssignedTo] = useState("");
+const [dueDate, setDueDate] = useState("");
 
 async function handleSubmit(event: React.FormEvent){
     event.preventDefault();
@@ -19,7 +21,7 @@ async function handleSubmit(event: React.FormEvent){
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ title, description, priority }),
+            body: JSON.stringify({ title, description, priority, assignedTo, dueDate }),
         });
 
         const data = await response.json();
@@ -28,6 +30,8 @@ async function handleSubmit(event: React.FormEvent){
         setTitle("");
         setDescription("");
         setPriority("low");
+        setAssignedTo("");
+        setDueDate("");
 
         alert("Task created successfully!");
     } catch (error) {
@@ -42,6 +46,23 @@ async function handleSubmit(event: React.FormEvent){
             <h1 className="text-6xl font-bold m-3 p-3 text-teal-200 text-outline-black">Want to create a new task?</h1>
 
             <form onSubmit={handleSubmit} className="flex justify-center flex-col gap-4 m-4 p-3">
+
+                <h3 className="text-2xl">Assign this task to</h3>
+                <input
+                    type="text"
+                    placeholder="Member name"
+                    value={assignedTo}
+                    onChange={(event) => setAssignedTo(event.target.value)}
+                    className="w-full p-3 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-white appearance-none"
+                />
+
+                <h3 className="text-2xl">When is it due?</h3>
+                <input
+                    type="date"
+                    value={dueDate}
+                    onChange={(event) => setDueDate(event.target.value)}
+                    className="w-full p-3 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-white appearance-none"
+                />
 
                 <h3 className="text-2xl">Whats the task name?</h3>
                 <input type="text" placeholder="Task name" value={title}  onChange={(event)=>{setTitle(event.target.value)}} className="w-full p-3 bg-white  rounded-xl focus:outline-none focus:ring-2 focus:ring-white appearance-none" />
