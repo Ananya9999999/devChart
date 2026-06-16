@@ -37,3 +37,23 @@ export async function POST(request: Request){
         );
     }
 }
+
+export async function PATCH(request: Request){
+    try{
+        await connectDB();
+
+        const {id, status}= await request.json();
+
+        const updatedTask= await Task.findByIdAndUpdate(id, {status}, {new: true});
+
+        return Response.json(updatedTask);
+    } catch(error){
+
+        console.log(error);
+
+        return Response.json(
+            {message:"Failed to update task"},
+            {status: 500}
+        );
+    }
+}
